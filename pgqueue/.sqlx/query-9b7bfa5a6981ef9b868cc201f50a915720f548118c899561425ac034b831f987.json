@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO pgqueue._sqlx_migrations (version, description, success, checksum, execution_time) SELECT 999999, 'unknown', true, checksum, 0 FROM pgqueue._sqlx_migrations WHERE version = 1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "9b7bfa5a6981ef9b868cc201f50a915720f548118c899561425ac034b831f987"
+}

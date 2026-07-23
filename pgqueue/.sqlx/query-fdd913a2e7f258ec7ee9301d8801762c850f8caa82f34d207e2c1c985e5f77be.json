@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "ALTER TABLE pgqueue.jobs ADD CONSTRAINT reject_cron_insert_for_test CHECK (kind <> 'cron') NOT VALID",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "fdd913a2e7f258ec7ee9301d8801762c850f8caa82f34d207e2c1c985e5f77be"
+}

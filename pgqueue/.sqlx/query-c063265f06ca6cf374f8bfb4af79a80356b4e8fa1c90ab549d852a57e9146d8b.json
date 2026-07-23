@@ -1,0 +1,108 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT name, expression, definition, revision, misfire_policy, grace_ms,\n                   next_run_at, now() AS \"now!\"\n            FROM pgqueue.cron_schedules\n            WHERE queue = $1 AND unique_key = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "expression",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "expression"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "definition",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "definition"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "revision",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "revision"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "misfire_policy",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "misfire_policy"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "grace_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "grace_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "next_run_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "cron_schedules",
+            "name": "next_run_at"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "now!",
+        "type_info": "Timestamptz",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      null
+    ]
+  },
+  "hash": "c063265f06ca6cf374f8bfb4af79a80356b4e8fa1c90ab549d852a57e9146d8b"
+}

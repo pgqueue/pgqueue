@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                WITH inserted AS (\n                    INSERT INTO pgqueue.jobs (\n                        queue, name, payload, unique_key, priority, group_key,\n                        max_attempts, timeout_ms, heartbeat_ms, retry_delay_ms,\n                        backoff, ttl_ms, scheduled_at, meta, kind, cron_expr\n                    )\n                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,\n                            $11, $12, $13, $14, 'cron', $15)\n                    ON CONFLICT (queue, unique_key) WHERE unique_key IS NOT NULL\n                        AND status IN ('queued', 'running', 'aborting') DO NOTHING\n                    RETURNING id\n                )\n                SELECT id AS \"id!\", pg_notify($16, 'enqueue') IS NULL AS \"notified!\"\n                FROM inserted\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "notified!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Jsonb",
+        "Text",
+        "Int2",
+        "Text",
+        "Int4",
+        "Int8",
+        "Int8",
+        "Int8",
+        "Jsonb",
+        "Int8",
+        "Timestamptz",
+        "Jsonb",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "17599de1bd0ba4a0d2e1f7720c8d01c49c43144c2d18dceb12cbfd9cddbfa199"
+}

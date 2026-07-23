@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.jobs SET status = 'complete', result = '42'::jsonb, completed_at = now() WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a6f3eec919a86ee211488f55005a949846c003d6502d13568c116e8e8254cecc"
+}

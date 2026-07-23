@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in | pgqueue</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{root}/static/pico.min.css">
+  <style>
+    html { height: 100%; letter-spacing: 0; }
+    body { min-height: 100%; letter-spacing: 0; }
+    body { display: grid; margin: 0; place-items: center; background: var(--pico-background-color); }
+    main { width: min(24rem, calc(100% - 2rem)); padding: 2rem 0; }
+    article { margin: 0; padding: 1.5rem; border: 1px solid var(--pico-muted-border-color); border-radius: 0.4rem; box-shadow: 0 0.4rem 1.5rem rgb(15 23 42 / 10%); }
+    h1 { margin-bottom: 0.25rem; font-size: 1.2rem; letter-spacing: 0; }
+    .product { margin-bottom: 1.25rem; color: var(--pico-muted-color); font-size: 0.82rem; }
+    label { font-size: 0.82rem; }
+    input, button { margin-bottom: 0.85rem; }
+    button { width: 100%; margin-bottom: 0; }
+    .error { min-height: 1.3rem; margin: 0 0 0.65rem; color: #b42318; font-size: 0.8rem; }
+    .error:empty { visibility: hidden; }
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+      <h1>Sign in</h1>
+      <p class="product">PGQUEUE dashboard</p>
+      <p class="error" role="alert">{error}</p>
+      <form method="post" action="{root}/login">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" value="{username}"
+               autocomplete="username" required autofocus>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password"
+               autocomplete="current-password" required>
+        <button type="submit">Sign in</button>
+      </form>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO pgqueue.jobs (queue, name, payload, group_key, scheduled_at) SELECT $1, $2, 'null'::jsonb, CASE WHEN n <= 900 THEN $3 ELSE $4 || n::text END, now() - interval '1 second' FROM generate_series(1, 1000) AS n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f172e6d1b62fab8b7b029c4f5018bffc75edc2e2e27ca556ccbbd1988c8ba60c"
+}

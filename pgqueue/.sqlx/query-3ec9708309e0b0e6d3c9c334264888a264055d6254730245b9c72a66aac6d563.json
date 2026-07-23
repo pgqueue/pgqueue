@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT column_name AS \"column_name!\" FROM information_schema.columns WHERE table_schema = 'pgqueue' AND table_name = 'workers' AND column_name = 'accepting'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "column_name!",
+        "type_info": "Name",
+        "origin": {
+          "Table": {
+            "table": "information_schema.columns",
+            "name": "column_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "3ec9708309e0b0e6d3c9c334264888a264055d6254730245b9c72a66aac6d563"
+}

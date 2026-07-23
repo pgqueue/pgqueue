@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.jobs SET kind = 'cron', cron_expr = '* * * * *', unique_key = 'cron:tick', status = 'failed', completed_at = now(), error = 'failed: boom' WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "398121f38cb29274d7c83d7b4e9fbc2f02a370a1ce902c5c440f7bece52efadf"
+}

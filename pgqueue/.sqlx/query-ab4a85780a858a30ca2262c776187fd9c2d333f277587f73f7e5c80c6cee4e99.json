@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM pgqueue._sqlx_migrations WHERE version = (SELECT max(version) FROM pgqueue._sqlx_migrations)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "ab4a85780a858a30ca2262c776187fd9c2d333f277587f73f7e5c80c6cee4e99"
+}

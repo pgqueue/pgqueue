@@ -1,0 +1,6 @@
+[common]
+database-url-var = "PGQUEUE_DATABASE_URL"
+
+[migrate]
+create-schemas = ["pgqueue"]
+table-name = "pgqueue._sqlx_migrations"

@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue._sqlx_migrations SET success = false WHERE version = 1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "5c3a39328330467119b912fd7ff93638204b8ffefa384b14f7e2a11d2d504f2b"
+}

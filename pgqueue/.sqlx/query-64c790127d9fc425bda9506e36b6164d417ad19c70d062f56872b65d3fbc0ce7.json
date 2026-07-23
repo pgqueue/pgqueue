@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE pgqueue.workers SET accepting = false, heartbeat_at = now()\n            WHERE id = $1 AND queue = $2\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "64c790127d9fc425bda9506e36b6164d417ad19c70d062f56872b65d3fbc0ce7"
+}

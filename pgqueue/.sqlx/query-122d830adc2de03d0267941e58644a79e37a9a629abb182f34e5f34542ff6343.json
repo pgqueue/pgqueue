@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE pgqueue.jobs AS j\n                SET status = 'aborting', error = $5, result = $6\n                FROM unnest($1::uuid[], $3::int[], $4::uuid[])\n                    AS stuck(id, attempts, worker_id)\n                WHERE j.id = stuck.id\n                  AND j.queue = $2\n                  AND j.status = 'running'\n                  AND j.attempts = stuck.attempts\n                  AND j.worker_id IS NOT DISTINCT FROM stuck.worker_id\n                  AND pgqueue.job_is_stuck(j, $7)\n                RETURNING j.id AS \"id!\"\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "UuidArray",
+        "Text",
+        "Int4Array",
+        "UuidArray",
+        "Text",
+        "Jsonb",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "122d830adc2de03d0267941e58644a79e37a9a629abb182f34e5f34542ff6343"
+}

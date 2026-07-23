@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue._sqlx_migrations SET checksum = checksum || decode('00', 'hex') WHERE version = 1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "9e4ad676ba80fda6a253549763c0c7f890ca11bcaec50b5e1bcb2dc6075e3ddd"
+}

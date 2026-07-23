@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT accepting FROM pgqueue.workers WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "accepting",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "workers",
+            "name": "accepting"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0cf2c52ec061ce3c82155ab1027d4a5944eda888a82b1a7cdf34596673ae05b2"
+}

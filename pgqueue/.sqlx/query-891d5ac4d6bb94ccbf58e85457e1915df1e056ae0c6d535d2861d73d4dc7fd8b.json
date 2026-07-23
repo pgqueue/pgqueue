@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.workers SET accepting = false, expires_at = now() - interval '1 second' WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "891d5ac4d6bb94ccbf58e85457e1915df1e056ae0c6d535d2861d73d4dc7fd8b"
+}

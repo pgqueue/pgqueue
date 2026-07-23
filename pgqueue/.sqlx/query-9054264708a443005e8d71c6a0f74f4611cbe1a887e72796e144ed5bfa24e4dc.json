@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH keys AS (\n                SELECT candidate.enqueued_at, candidate.id\n                FROM unnest($2::text[]) AS requested(status)\n                CROSS JOIN LATERAL (\n                    SELECT enqueued_at, id\n                    FROM pgqueue.jobs\n                    WHERE queue = $1\n                      AND kind = $3\n                      AND status = requested.status\n                    ORDER BY enqueued_at DESC, id DESC\n                    LIMIT $4\n                ) candidate\n                ORDER BY candidate.enqueued_at DESC, candidate.id DESC\n                LIMIT $4\n            )\n            SELECT jobs.name AS \"name!\"\n            FROM keys\n            JOIN pgqueue.jobs AS jobs ON jobs.id = keys.id\n            WHERE starts_with(lower(jobs.name), lower($5))\n            GROUP BY jobs.name\n            ORDER BY lower(jobs.name), jobs.name\n            LIMIT $6\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "TextArray",
+        "Text",
+        "Int8",
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "9054264708a443005e8d71c6a0f74f4611cbe1a887e72796e144ed5bfa24e4dc"
+}

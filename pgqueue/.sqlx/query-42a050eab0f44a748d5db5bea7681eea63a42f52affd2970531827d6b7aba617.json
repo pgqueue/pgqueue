@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT indexdef AS \"indexdef!\" FROM pg_indexes WHERE schemaname = 'pgqueue' AND indexname = 'jobs_dequeue_name_idx'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "indexdef!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "pg_indexes",
+            "name": "indexdef"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "42a050eab0f44a748d5db5bea7681eea63a42f52affd2970531827d6b7aba617"
+}

@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT to_regclass('pgqueue.jobs_group_idx')::text",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "to_regclass",
+        "type_info": "Text",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "067b9ad75ed7cac4e6484e8c041b310256d60cce147bbdbf952c7dd59621aadf"
+}

@@ -1,0 +1,42 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    EXISTS (\n                        SELECT 1 FROM pgqueue.workers\n                        WHERE id = $2 AND queue = $1\n                          AND accepting AND expires_at > now()\n                    ) AS \"intake_open!\",\n                    EXISTS (\n                        SELECT 1 FROM pgqueue.jobs job\n                        WHERE job.queue = $1 AND job.status = 'queued'\n                          AND job.scheduled_at <= now()\n                          AND job.priority BETWEEN $4 AND $5\n                          AND job.name = ANY($3)\n                          AND (job.group_key IS NULL OR (\n                                NOT EXISTS (\n                                    SELECT 1 FROM pgqueue.jobs running\n                                    WHERE running.queue = $1\n                                      AND running.status IN ('running', 'aborting')\n                                      AND running.group_key = job.group_key\n                                )\n                                AND NOT EXISTS (\n                                    SELECT 1 FROM pgqueue.jobs earlier\n                                    WHERE earlier.queue = $1\n                                      AND earlier.status = 'queued'\n                                      AND earlier.scheduled_at <= now()\n                                      AND earlier.group_key = job.group_key\n                                      AND (earlier.priority, earlier.scheduled_at, earlier.id) <\n                                          (job.priority, job.scheduled_at, job.id)\n                                )\n                          ))\n                    ) AS \"work_available!\",\n                    CASE WHEN $6 THEN ARRAY(\n                        SELECT name FROM (\n                            SELECT DISTINCT name FROM pgqueue.jobs\n                            WHERE queue = $1 AND status = 'queued'\n                              AND scheduled_at <= now()\n                              AND priority BETWEEN $4 AND $5\n                              AND NOT (name = ANY($3))\n                        ) unhandled ORDER BY name LIMIT 10\n                    ) ELSE ARRAY[]::text[] END AS \"unhandled_names!\"\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "intake_open!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "work_available!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "unhandled_names!",
+        "type_info": "TextArray",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "TextArray",
+        "Int2",
+        "Int2",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "8162449bb055b9b7647f2d25c008db95889aa5d109cb2f284234c460526aecfa"
+}

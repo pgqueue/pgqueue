@@ -1,0 +1,18 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_USER: pgqueue
+      POSTGRES_PASSWORD: pgqueue
+      POSTGRES_DB: pgqueue
+    ports:
+      # 5439 to avoid clashing with any locally running Postgres on 5432
+      - "5439:5432"
+    # Durability off: this instance exists only for local tests.
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgqueue"]
+      interval: 1s
+      timeout: 3s
+      retries: 30

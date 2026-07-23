@@ -1,0 +1,107 @@
+error: expected an unsuffixed integer literal
+ --> tests/ui/fail.rs:1:29
+  |
+1 | #[pgqueue::job(timeout_ms = "30000")]
+  |                             ^^^^^^^
+
+error: max_attempts must be between 1 and 2147483646
+ --> tests/ui/fail.rs:4:31
+  |
+4 | #[pgqueue::job(max_attempts = 2147483647)]
+  |                               ^^^^^^^^^^
+
+error: unknown attribute `max_attempt`; expected one of: name, max_attempts, timeout_ms, heartbeat_ms, ttl_ms, retry_delay_ms, backoff, backoff_max_ms, priority, revision
+ --> tests/ui/fail.rs:7:16
+  |
+7 | #[pgqueue::job(max_attempt = 3)]
+  |                ^^^^^^^^^^^
+
+error: `revision` is only valid on #[pgqueue::cron]
+  --> tests/ui/fail.rs:10:1
+   |
+10 | #[pgqueue::job(revision = 1)]
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this error originates in the attribute macro `pgqueue::job` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: #[pgqueue::job] functions need a payload as their first parameter; use `_: ()` for jobs without one
+  --> tests/ui/fail.rs:14:10
+   |
+14 | async fn no_payload() {}
+   |          ^^^^^^^^^^
+
+error: #[pgqueue::job] functions must be async
+  --> tests/ui/fail.rs:17:1
+   |
+17 | fn not_async(_: ()) {}
+   | ^^
+
+error: #[pgqueue::job] functions cannot be unsafe
+  --> tests/ui/fail.rs:20:7
+   |
+20 | async unsafe fn unsafe_job(_: ()) {}
+   |       ^^^^^^
+
+error: #[pgqueue::cron] functions cannot be unsafe
+  --> tests/ui/fail.rs:23:7
+   |
+23 | async unsafe fn unsafe_cron() {}
+   |       ^^^^^^
+
+error: #[pgqueue::job] functions cannot be generic
+  --> tests/ui/fail.rs:26:17
+   |
+26 | async fn generic<T: serde::de::DeserializeOwned>(args: T) {
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: invalid cron expression "99 * * * *": Component error: Number out of bounds.
+  --> tests/ui/fail.rs:30:17
+   |
+30 | #[pgqueue::cron("99 * * * *")]
+   |                 ^^^^^^^^^^^^
+
+error: expected a cron expression string as the first argument, e.g. #[pgqueue::cron("0 * * * *")]
+  --> tests/ui/fail.rs:33:17
+   |
+33 | #[pgqueue::cron(30)]
+   |                 ^^
+
+error[E0277]: the trait bound `NotAnExtractor: FromJobContext` is not satisfied
+  --> tests/ui/fail.rs:40:38
+   |
+40 | async fn bad_extractor(_: (), value: NotAnExtractor) {
+   |                                      ^^^^^^^^^^^^^^ unsatisfied trait bound
+   |
+help: the trait `FromJobContext` is not implemented for `NotAnExtractor`
+  --> tests/ui/fail.rs:37:1
+   |
+37 | struct NotAnExtractor;
+   | ^^^^^^^^^^^^^^^^^^^^^
+help: the following other types implement trait `FromJobContext`
+  --> src/job.rs
+   |
+   | impl FromJobContext for JobContext {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `JobContext`
+...
+   | impl<T: Clone + Send + Sync + 'static> FromJobContext for JobState<T> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `JobState<T>`
+
+error[E0277]: the trait bound `Payload: FromJobContext` is not satisfied
+  --> tests/ui/fail.rs:48:30
+   |
+48 | async fn cron_payload(value: Payload) {
+   |                              ^^^^^^^ unsatisfied trait bound
+   |
+help: the trait `FromJobContext` is not implemented for `Payload`
+  --> tests/ui/fail.rs:45:1
+   |
+45 | struct Payload;
+   | ^^^^^^^^^^^^^^
+help: the following other types implement trait `FromJobContext`
+  --> src/job.rs
+   |
+   | impl FromJobContext for JobContext {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `JobContext`
+...
+   | impl<T: Clone + Send + Sync + 'static> FromJobContext for JobState<T> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `JobState<T>`

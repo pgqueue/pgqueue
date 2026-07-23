@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.jobs SET kind = 'cron', cron_expr = '* * * * *' WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a040c9acc9547a862991d96cec31c6571b7554e0c33f5c5f53534c6e6d678282"
+}

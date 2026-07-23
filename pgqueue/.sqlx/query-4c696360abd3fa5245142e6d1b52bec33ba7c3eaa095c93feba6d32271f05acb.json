@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SET ROLE pg_read_all_data",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "4c696360abd3fa5245142e6d1b52bec33ba7c3eaa095c93feba6d32271f05acb"
+}

@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT to_regclass('pgqueue._sqlx_migrations')::text",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "to_regclass",
+        "type_info": "Text",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "b58ae4d460a82a76713198e97f7e9b301caecd6538f76011f92cdc5e50895bc9"
+}

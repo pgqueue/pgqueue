@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT EXISTS (SELECT 1 FROM pg_locks locks JOIN pg_stat_activity activity USING (pid) WHERE locks.locktype = 'advisory' AND NOT locks.granted AND activity.datname = current_database())",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "exists",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "7ab73fb2cf4483142879fa68db2169cdd23aa7bea4af6a8e7df1f681cbab6481"
+}

@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT pg_get_constraintdef(oid) AS \"definition!\" FROM pg_constraint WHERE conrelid = 'pgqueue.cron_schedules'::regclass AND contype = 'p'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "definition!",
+        "type_info": "Text",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "c353911e31f2f9e44bcccd34ac7f7dc5ccd9110d324564e3ca6fea2baf823a0c"
+}

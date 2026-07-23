@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.cron_schedules SET next_run_at = now() WHERE queue = $1 AND unique_key = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b598ac8f591a92c5987c00a7b9fb244d7b617eaf4ae55ecea4d9b4c139e2d1f3"
+}

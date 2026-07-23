@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT pg_get_indexdef(indexes.indexrelid) AS \"indexdef!\", pg_get_expr(indexes.indpred, indexes.indrelid) AS \"predicate!\" FROM pg_index indexes JOIN pg_class index_class ON index_class.oid = indexes.indexrelid JOIN pg_class table_class ON table_class.oid = indexes.indrelid JOIN pg_namespace namespace ON namespace.oid = table_class.relnamespace WHERE namespace.nspname = 'pgqueue' AND index_class.relname = 'jobs_running_group_unique_idx'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "indexdef!",
+        "type_info": "Text",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "predicate!",
+        "type_info": "Text",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "79091502bd412d99e264017a9d587fa83cbc16b2227bf4dc2475448d74322051"
+}

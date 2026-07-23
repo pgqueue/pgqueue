@@ -1,0 +1,68 @@
+# Configuration for `prek` (https://prek.j178.dev), run on every commit.
+# Schema: https://www.schemastore.org/prek.json
+
+# Vendored, minified assets are not ours to reformat.
+exclude = "\\.min\\.(css|js)$"
+
+[[repos]]
+repo = "builtin"
+hooks = [
+    { id = "trailing-whitespace" },
+    { id = "end-of-file-fixer" },
+    { id = "check-yaml" },
+    { id = "check-toml" },
+    { id = "check-merge-conflict" },
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "sqlx-check"
+name = "SQLx migrations and query metadata"
+entry = """
+docker compose up -d --wait
+export PGQUEUE_DATABASE_URL="${PGQUEUE_DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}"
+export DATABASE_URL="$PGQUEUE_DATABASE_URL"
+(cd pgqueue && cargo sqlx migrate run)
+(cd pgqueue && cargo sqlx prepare --check -- --all-targets --all-features)
+"""
+language = "system"
+shell = "bash"
+files = "^(Cargo\\.(toml|lock)|prek\\.toml|compose\\.yaml|pgqueue(?:-macros)?/)"
+pass_filenames = false
+
+[[repos.hooks]]
+id = "cargo-fmt"
+name = "cargo fmt"
+entry = "cargo fmt --all -- --check"
+language = "system"
+types = ["rust"]
+pass_filenames = false
+
+[[repos.hooks]]
+id = "cargo-clippy"
+name = "cargo clippy"
+entry = """
+cargo clippy --quiet --workspace --all-targets -- -D warnings
+cargo clippy --quiet --workspace --all-targets --all-features -- -D warnings
+"""
+language = "system"
+shell = "bash"
+files = "^(Cargo\\.(toml|lock)|pgqueue(?:-macros)?/(Cargo\\.toml|.*\\.rs))$"
+pass_filenames = false
+
+[[repos.hooks]]
+id = "cargo-test"
+name = "cargo test"
+entry = """
+docker compose up -d --wait
+export PGQUEUE_DATABASE_URL="${PGQUEUE_DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}"
+export DATABASE_URL="$PGQUEUE_DATABASE_URL"
+cargo test --quiet --workspace --all-features --doc
+cargo llvm-cov --quiet --workspace --all-features --fail-under-lines 90
+"""
+language = "system"
+shell = "bash"
+files = "^(Cargo\\.(toml|lock)|prek\\.toml|compose\\.yaml|pgqueue(?:-macros)?/)"
+pass_filenames = false

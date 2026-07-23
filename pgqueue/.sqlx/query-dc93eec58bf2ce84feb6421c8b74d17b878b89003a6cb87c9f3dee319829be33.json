@@ -1,0 +1,51 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                COUNT(*) FILTER (WHERE status = 'queued' AND scheduled_at <= now()) AS \"queued!\",\n                COUNT(*) FILTER (WHERE status IN ('running', 'aborting')) AS \"running!\",\n                COUNT(*) FILTER (WHERE status = 'queued' AND scheduled_at > now()) AS \"scheduled!\",\n                COUNT(*) FILTER (WHERE status = 'failed') AS \"failed!\",\n                COUNT(*) FILTER (WHERE status = 'aborted') AS \"aborted!\"\n            FROM pgqueue.jobs WHERE queue = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "queued!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "running!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "scheduled!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "failed!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "aborted!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "dc93eec58bf2ce84feb6421c8b74d17b878b89003a6cb87c9f3dee319829be33"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "LOCK TABLE pgqueue.jobs IN ACCESS EXCLUSIVE MODE",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "6f2c5b3b9d7d6945193a7ba26b4b89af54a9e3f6a2d74672d8d3f5f69d06cd72"
+}

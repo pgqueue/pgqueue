@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM pgqueue.jobs",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "a9aa34836f6cf61b41cddbb9c054b63f7829aae4734519f491234190d1a5bfa4"
+}

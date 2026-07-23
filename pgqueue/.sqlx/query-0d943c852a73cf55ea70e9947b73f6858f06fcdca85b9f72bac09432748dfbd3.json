@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO pgqueue.workers (id, queue, stats, metadata, expires_at)\n            VALUES ($1, $2, $3, $5, now() + ($4::bigint * interval '1 millisecond'))\n            ON CONFLICT (id) DO UPDATE SET\n                stats = $3, metadata = $5, heartbeat_at = now(),\n                expires_at = now() + ($4::bigint * interval '1 millisecond'),\n                accepting = CASE WHEN $6 THEN true ELSE pgqueue.workers.accepting END\n            WHERE pgqueue.workers.queue = EXCLUDED.queue\n            RETURNING id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workers",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Jsonb",
+        "Int8",
+        "Jsonb",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0d943c852a73cf55ea70e9947b73f6858f06fcdca85b9f72bac09432748dfbd3"
+}

@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO pgqueue.jobs (\n            queue, name, payload, status, completed_at, expires_at\n        )\n        SELECT $1, 'expired-batch', 'null'::jsonb, 'complete', now(),\n               now() - interval '1 second'\n        FROM generate_series(1, 5)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9bf9c6dde6691c9984133f4c537df7a7250060c2362d445e5b072333404ce2d0"
+}

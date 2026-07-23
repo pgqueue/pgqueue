@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO pgqueue.cron_occurrences (\n                queue, unique_key, scheduled_at, expires_at\n            ) VALUES ($1, $2, $3, $4)\n            ON CONFLICT DO NOTHING\n            RETURNING true AS \"claimed!\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "claimed!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "324e5ad73be6ce473bee3c981601ca23a1e86ee2be124926b13421d8bc7cdc80"
+}

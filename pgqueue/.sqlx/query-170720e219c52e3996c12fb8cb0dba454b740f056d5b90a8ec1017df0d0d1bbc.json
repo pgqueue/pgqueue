@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH touched AS (\n                UPDATE pgqueue.jobs SET touched_at = now()\n                WHERE id = $1 AND queue = $2 AND status IN ('running', 'aborting')\n                  AND (NOT $5 OR (attempts = $3 AND worker_id IS NOT DISTINCT FROM $4))\n                RETURNING true AS touched\n            )\n            SELECT touched AS \"touched!\" FROM touched\n            UNION ALL\n            SELECT false AS \"touched!\" FROM pgqueue.jobs\n            WHERE id = $1 AND queue = $2 AND NOT EXISTS (SELECT 1 FROM touched)\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "touched!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Int4",
+        "Uuid",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "170720e219c52e3996c12fb8cb0dba454b740f056d5b90a8ec1017df0d0d1bbc"
+}

@@ -1,0 +1,322 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH candidates AS (\n                SELECT job.id FROM pgqueue.jobs job\n                WHERE job.queue = $1 AND job.status = 'queued'\n                  AND job.group_key IS NULL\n                  AND job.scheduled_at <= now()\n                  AND job.priority BETWEEN $2 AND $3\n                  AND ($7::text[] IS NULL OR job.name = ANY($7))\n                  AND NOT EXISTS (\n                      SELECT 1 FROM pgqueue.jobs grouped\n                      WHERE grouped.queue = $1 AND grouped.status = 'queued'\n                        AND grouped.group_key IS NOT NULL\n                        AND grouped.scheduled_at <= now()\n                        AND grouped.priority BETWEEN $2 AND $3\n                        AND ($7::text[] IS NULL OR grouped.name = ANY($7))\n                  )\n                ORDER BY job.priority, job.scheduled_at, job.id\n                LIMIT $4\n                FOR UPDATE OF job SKIP LOCKED\n            ), updated AS (\n                UPDATE pgqueue.jobs job\n                SET status = 'running', attempts = job.attempts + 1,\n                    started_at = now(), touched_at = now(), worker_id = $5\n                FROM candidates\n                WHERE job.id = candidates.id AND job.queue = $1\n                  AND job.status = 'queued' AND job.group_key IS NULL\n                  AND job.scheduled_at <= now()\n                  AND job.priority BETWEEN $2 AND $3\n                  AND ($7::text[] IS NULL OR job.name = ANY($7))\n                  AND (NOT $6 OR EXISTS (\n                      SELECT 1 FROM pgqueue.workers worker\n                      WHERE worker.id = $5 AND worker.queue = $1\n                        AND worker.accepting AND worker.expires_at > now()\n                  ))\n                RETURNING job.id, job.unique_key, job.queue, job.name,\n                          job.payload, job.status, job.priority, job.group_key,\n                          job.attempts, job.max_attempts, job.timeout_ms,\n                          job.heartbeat_ms, job.retry_delay_ms, job.backoff,\n                          job.ttl_ms, job.scheduled_at, job.enqueued_at,\n                          job.started_at, job.touched_at, job.completed_at,\n                          job.expires_at, job.result, job.error, job.meta,\n                          job.worker_id\n            )\n            SELECT id, unique_key, queue, name, payload,\n                   status AS \"status: JobStatus\", priority, group_key, attempts,\n                   max_attempts, timeout_ms, heartbeat_ms, retry_delay_ms,\n                   backoff AS \"backoff: JobRetryBackoff\", ttl_ms, scheduled_at,\n                   enqueued_at, started_at, touched_at, completed_at, expires_at,\n                   result, error, meta, worker_id\n            FROM updated\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "unique_key",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "unique_key"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "queue",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "queue"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "payload",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "payload"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "status: JobStatus",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "priority",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "priority"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "group_key",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "group_key"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "attempts"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "max_attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "max_attempts"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "timeout_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "timeout_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "heartbeat_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "heartbeat_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "retry_delay_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "retry_delay_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "backoff: JobRetryBackoff",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "backoff"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "ttl_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "ttl_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "scheduled_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "scheduled_at"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "enqueued_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "enqueued_at"
+          }
+        }
+      },
+      {
+        "ordinal": 17,
+        "name": "started_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "started_at"
+          }
+        }
+      },
+      {
+        "ordinal": 18,
+        "name": "touched_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "touched_at"
+          }
+        }
+      },
+      {
+        "ordinal": 19,
+        "name": "completed_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "completed_at"
+          }
+        }
+      },
+      {
+        "ordinal": 20,
+        "name": "expires_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "expires_at"
+          }
+        }
+      },
+      {
+        "ordinal": 21,
+        "name": "result",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "result"
+          }
+        }
+      },
+      {
+        "ordinal": 22,
+        "name": "error",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "error"
+          }
+        }
+      },
+      {
+        "ordinal": 23,
+        "name": "meta",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "meta"
+          }
+        }
+      },
+      {
+        "ordinal": 24,
+        "name": "worker_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "worker_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int2",
+        "Int2",
+        "Int8",
+        "Uuid",
+        "Bool",
+        "TextArray"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "bf4b00a9ae94e26570e0f2561d2b6e8cbb65cd0fa7568f723087e3d7f5c812eb"
+}

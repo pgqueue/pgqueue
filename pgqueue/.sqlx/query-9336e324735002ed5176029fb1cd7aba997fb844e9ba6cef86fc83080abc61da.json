@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT column_name AS \"column_name!\" FROM information_schema.columns WHERE table_schema = 'pgqueue' AND table_name = 'jobs' AND column_name IN ('cron_expr', 'kind', 'max_attempts', 'retried_at') ORDER BY column_name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "column_name!",
+        "type_info": "Name",
+        "origin": {
+          "Table": {
+            "table": "information_schema.columns",
+            "name": "column_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "9336e324735002ed5176029fb1cd7aba997fb844e9ba6cef86fc83080abc61da"
+}

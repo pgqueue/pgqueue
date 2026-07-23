@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.jobs SET started_at = now() - CASE WHEN id = $1 THEN interval '2 seconds' ELSE interval '1 second' END, touched_at = now() - CASE WHEN id = $1 THEN interval '2 seconds' ELSE interval '1 second' END WHERE id IN ($1, $2)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "38476ac2c856cddbea288cae372aea2a13f8b6dd8d897f96e0c8c9c9ba54e68a"
+}

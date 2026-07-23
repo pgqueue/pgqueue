@@ -1,0 +1,39 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH updated AS (\n                UPDATE pgqueue.jobs\n                SET status = CASE WHEN status = 'queued' THEN 'aborted' ELSE 'aborting' END,\n                    error = $2, touched_at = now(),\n                    completed_at = CASE WHEN status = 'queued' THEN now() ELSE completed_at END,\n                    expires_at = CASE WHEN status = 'queued' AND ttl_ms IS NOT NULL\n                        THEN now() + (ttl_ms * interval '1 millisecond') ELSE expires_at END\n                WHERE id = $1 AND queue = $3 AND status IN ('queued', 'running')\n                RETURNING status\n            )\n            SELECT status AS \"status!\",\n                   (CASE WHEN status = 'aborted' THEN pg_notify($4, $5) END) IS NULL\n                       AS \"notify_skipped!\"\n            FROM updated\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "status!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "notify_skipped!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "9dad814e5a864aaa9902dd2fb6436f57cc82eb87b9bc438052ae24d77e0e183d"
+}

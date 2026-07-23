@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE pgqueue.jobs SET started_at = now() - interval '100 milliseconds' WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "810cc1c5861ad6880d86e57a56e470bc2b667167a93f84c2cb02e94fc65cf2a4"
+}

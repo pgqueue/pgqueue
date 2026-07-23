@@ -1,0 +1,44 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH candidate AS (\n                SELECT j.id, j.ttl_ms FROM pgqueue.jobs j\n                WHERE j.id = $1 AND j.queue = $7\n                  AND (j.status = 'running' OR ($9 AND j.status = 'aborting'\n                       AND (NOT $10 OR (j.error = $11 AND j.result = $12))))\n                  AND j.attempts = $5 AND j.worker_id IS NOT DISTINCT FROM $6\n                  AND ($8 OR (\n                      pgqueue.job_is_stuck(j, $13::bigint)\n                      AND (\n                          (j.unique_key IS NULL AND j.group_key IS NULL)\n                          OR NOT EXISTS (\n                              SELECT 1 FROM pgqueue.workers w\n                              WHERE w.id = j.worker_id AND w.queue = j.queue\n                                AND w.expires_at > now()\n                          )\n                      )\n                  ))\n                FOR UPDATE\n            ),\n            deleted AS (\n                DELETE FROM pgqueue.jobs\n                WHERE id IN (SELECT id FROM candidate WHERE ttl_ms = 0)\n                RETURNING id\n            ),\n            updated AS (\n                UPDATE pgqueue.jobs j\n                SET status = $2, result = $3,\n                    error = CASE WHEN $2 = 'complete' THEN $4 ELSE COALESCE($4, j.error) END,\n                    completed_at = now(), touched_at = now(),\n                    expires_at = CASE WHEN j.ttl_ms IS NULL THEN NULL\n                                      ELSE now() + (j.ttl_ms * interval '1 millisecond') END\n                FROM candidate c\n                WHERE j.id = c.id AND c.ttl_ms IS DISTINCT FROM 0\n                RETURNING j.id\n            ),\n            finished AS (\n                SELECT id FROM deleted UNION ALL SELECT id FROM updated\n            )\n            SELECT EXISTS (SELECT 1 FROM finished) AS \"finished!\",\n                   (SELECT pg_notify($14, $15) FROM finished) IS NULL AS \"notify_skipped!\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "finished!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "notify_skipped!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Jsonb",
+        "Text",
+        "Int4",
+        "Uuid",
+        "Text",
+        "Bool",
+        "Bool",
+        "Bool",
+        "Text",
+        "Jsonb",
+        "Int8",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "dd3c897ee6a008f9770e438e338e49b892558382e03041eb459a1b1dd518b1e7"
+}

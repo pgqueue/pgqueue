@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            WITH inserted AS (\n                INSERT INTO pgqueue.jobs (\n                    queue, name, payload, unique_key, priority, group_key, max_attempts,\n                    timeout_ms, heartbeat_ms, retry_delay_ms, backoff, ttl_ms,\n                    scheduled_at, meta, kind, cron_expr\n                )\n                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,\n                        COALESCE($13, now() + ($15::bigint * interval '1 millisecond'), now()),\n                        $14, 'job', NULL)\n                ON CONFLICT (queue, unique_key) WHERE unique_key IS NOT NULL\n                    AND status IN ('queued', 'running', 'aborting') DO NOTHING\n                RETURNING id\n            )\n            SELECT id AS \"id!\", pg_notify($16, 'enqueue') IS NULL AS \"notified!\"\n            FROM inserted\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "notified!",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Jsonb",
+        "Text",
+        "Int2",
+        "Text",
+        "Int4",
+        "Int8",
+        "Int8",
+        "Int8",
+        "Jsonb",
+        "Int8",
+        "Timestamptz",
+        "Jsonb",
+        "Int8",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "d360b1ba3a2de0503a169dfcb3adbecc1fb9b1517d6d9dc0cf044ba259e55931"
+}

@@ -1,0 +1,140 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                j.id,\n                j.name,\n                j.status AS \"status: JobStatus\",\n                j.attempts,\n                j.max_attempts,\n                j.retry_delay_ms,\n                j.backoff AS \"backoff: JobRetryBackoff\",\n                j.error,\n                j.result,\n                j.worker_id\n            FROM pgqueue.jobs AS j\n            WHERE j.queue = $1\n              AND j.status IN ('running', 'aborting')\n              AND pgqueue.job_is_stuck(j, $2)\n              AND (\n                  j.status = 'running'\n                  OR NOT EXISTS (\n                      SELECT 1 FROM pgqueue.workers w\n                      WHERE w.id = j.worker_id AND w.queue = j.queue\n                        AND w.expires_at > now()\n                  )\n                  OR (\n                      j.unique_key IS NULL AND j.group_key IS NULL\n                      AND NOT (\n                          j.error IS NOT DISTINCT FROM $4\n                          AND j.result IS NOT DISTINCT FROM $5\n                          AND j.attempts < j.max_attempts\n                      )\n                  )\n              )\n            ORDER BY j.touched_at, j.id\n            LIMIT $3\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "status: JobStatus",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "attempts"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "max_attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "max_attempts"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "retry_delay_ms",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "retry_delay_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "backoff: JobRetryBackoff",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "backoff"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "error",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "error"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "result",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "result"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "worker_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "worker_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int8",
+        "Int8",
+        "Text",
+        "Jsonb"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "54166aeb4b5466b8d55bfa8a17ec13b1b203ec843527095e1ece9f44def4ea7b"
+}

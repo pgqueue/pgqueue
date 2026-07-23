@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "ALTER TABLE pgqueue.jobs DROP CONSTRAINT reject_cron_insert_for_test",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "5e5f08731908f9f03d7d51cad7a2410f21bbfd5f0e3a18c8395512cd6daba609"
+}

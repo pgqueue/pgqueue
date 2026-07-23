@@ -1,0 +1,59 @@
+[workspace]
+resolver = "3"
+members = ["pgqueue", "pgqueue-macros"]
+
+[workspace.package]
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.94"
+license = "MIT"
+repository = "https://github.com/pgqueue/pgqueue"
+authors = ["Joohwan Oh <joohwan@hounddog.ai>"]
+
+[workspace.dependencies]
+pgqueue-macros = { path = "pgqueue-macros", version = "0.2.0" }
+
+chrono = { version = "0.4.45", default-features = false, features = ["clock", "serde"] }
+cron_schedule = { package = "croner", version = "3.0" }
+rand = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sqlx = { version = "0.9", default-features = false, features = [
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls",
+    "macros",
+    "migrate",
+    "sqlx-toml",
+    "derive",
+    "chrono",
+    "uuid",
+    "json",
+] }
+thiserror = "2.0"
+tokio = { version = "1.52", features = [
+    "macros",
+    "rt",
+    "signal",
+    "sync",
+    "time",
+] }
+tokio-util = { version = "0.7", features = ["rt"] }
+tracing = "0.1"
+uuid = { version = "1.23", features = ["v7", "serde"] }
+
+# proc-macro
+proc-macro2 = "1.0"
+proc-macro-crate = "3.5"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
+
+# dashboard (optional)
+axum = "0.8"
+include_dir = "0.7"
+
+# dev
+anyhow = "1.0"
+tower = { version = "0.5", features = ["util"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+trybuild = "1.0"
