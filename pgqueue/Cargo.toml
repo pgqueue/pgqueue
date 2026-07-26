@@ -1,0 +1,59 @@
+[package]
+name = "pgqueue"
+description = "Background and cron job processing backed by PostgreSQL 18+"
+autotests = false
+keywords = ["job", "queue", "cron", "postgres", "worker"]
+categories = ["asynchronous", "database"]
+readme = "../README.md"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+name = "pgqueue"
+
+[[test]]
+name = "integration"
+path = "tests/integration.rs"
+
+[[example]]
+name = "dashboard"
+
+[features]
+default = []
+# Internal: exposes the raw queue protocol to this crate's own integration
+# tests. Never enable it from application code; it bypasses the Consumer and
+# Attempt guards and carries no stability guarantee. The leading underscore
+# keeps it off the feature list docs.rs renders.
+_test = []
+
+[dependencies]
+pgqueue-macros.workspace = true
+
+anyhow.workspace = true
+axum.workspace = true
+chrono.workspace = true
+cron_schedule.workspace = true
+include_dir.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sqlx.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["net"] }
+tokio-util.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+# Self-reference so tests (a separate crate) get the internal test-support API
+# without it leaking into normal builds.
+pgqueue = { path = ".", features = ["_test"] }
+
+tokio = { workspace = true, features = ["io-util", "net", "rt-multi-thread", "test-util"] }
+tower.workspace = true
+tracing-subscriber.workspace = true
+trybuild.workspace = true

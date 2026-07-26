@@ -1,0 +1,81 @@
+[workspace]
+resolver = "3"
+members = ["pgqueue", "pgqueue-macros"]
+
+# Debug information is the bulk of `dev` codegen and link time, and almost none
+# of it is read: workspace members keep just enough for a useful panic
+# backtrace, dependencies generate none, and `--profile debugging` opts back in
+# when a debugger is actually needed.
+# https://doc.rust-lang.org/cargo/guide/build-performance.html#reduce-amount-of-generated-debug-information
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
+
+[profile.debugging]
+inherits = "dev"
+debug = true
+
+# `inherits = "dev"` carries the per-package override above into this profile,
+# and a profile-level `debug` does not outrank a per-package one — so without
+# this every dependency stayed stripped and stepping into syn, sqlx or tokio had
+# no source information, which is the one thing this profile exists to provide.
+[profile.debugging.package."*"]
+debug = true
+
+[workspace.package]
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+repository = "https://github.com/pgqueue/pgqueue"
+authors = ["Joohwan Oh <joohwan@hounddog.ai>"]
+
+[workspace.dependencies]
+pgqueue-macros = { path = "pgqueue-macros", version = "0.2.0" }
+
+chrono = { version = "0.4.45", default-features = false, features = ["clock", "serde"] }
+cron_schedule = { package = "croner", version = "3.0" }
+rand = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sqlx = { version = "0.9", default-features = false, features = [
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls",
+    "macros",
+    "migrate",
+    "sqlx-toml",
+    "derive",
+    "chrono",
+    "uuid",
+    "json",
+] }
+thiserror = "2.0"
+tokio = { version = "1.52", features = [
+    "macros",
+    "rt",
+    "signal",
+    "sync",
+    "time",
+] }
+tokio-util = { version = "0.7", features = ["rt"] }
+tracing = "0.1"
+uuid = { version = "1.23", features = ["v7", "serde"] }
+
+# proc-macro
+proc-macro2 = "1.0"
+proc-macro-crate = "3.5"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits", "visit"] }
+
+# dashboard
+axum = "0.8"
+include_dir = "0.7"
+
+# dev
+anyhow = "1.0"
+tower = { version = "0.5", features = ["util"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+trybuild = "1.0"

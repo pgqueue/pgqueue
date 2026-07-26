@@ -1,0 +1,102 @@
+# Configuration for `prek` (https://prek.j178.dev), run on every commit.
+# Schema: https://www.schemastore.org/prek.json
+minimum_prek_version = "0.3.11"
+
+# Hooks run cheapest first and the run stops at the first failure, so a commit
+# that is already going to be rejected never pays for a full test run.
+fail_fast = true
+
+# Vendored, minified assets are not ours to reformat.
+exclude = '\.min\.(css|js)$'
+
+[[repos]]
+repo = "builtin"
+hooks = [
+    { id = "trailing-whitespace" },
+    { id = "end-of-file-fixer" },
+    { id = "mixed-line-ending", args = ["--fix=lf"] },
+    { id = "check-merge-conflict" },
+    { id = "check-added-large-files" },
+    { id = "detect-private-key" },
+    { id = "check-toml" },
+    { id = "check-yaml" },
+    { id = "check-case-conflict" },
+    { id = "destroyed-symlinks" },
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "cargo-fmt"
+name = "cargo fmt"
+entry = "cargo fmt --all -- --check"
+language = "system"
+types = ["rust"]
+pass_filenames = false
+
+[[repos.hooks]]
+id = "cargo-clippy"
+name = "cargo clippy"
+entry = '''
+set -euo pipefail
+# Two runs because there are two configurations to lint. `--all-targets` builds
+# the test targets, which drags in the self-referencing dev-dependency and so
+# forces `_test` on — that run can never see the crate the way a consumer
+# compiles it. `--lib` is the only target selection that leaves dev-dependencies
+# out of feature resolution, so it is what covers the published default.
+cargo clippy --locked --quiet --workspace --lib -- -D warnings
+docker compose up -d --wait postgres
+(
+    cd pgqueue
+    DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+        cargo sqlx migrate run
+)
+DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+    cargo clippy --locked --quiet --workspace --all-targets --all-features -- -D warnings
+'''
+language = "system"
+shell = "bash"
+files = '^(Cargo\.(toml|lock)|pgqueue(?:-macros)?/(Cargo\.toml|sqlx\.toml|.*\.rs))$'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "sqlx-migrations"
+name = "SQLx migrations"
+entry = '''
+set -euo pipefail
+docker compose up -d --wait postgres
+(
+    cd pgqueue
+    DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+        cargo sqlx migrate run
+)
+'''
+language = "system"
+shell = "bash"
+files = '^(Cargo\.(toml|lock)|prek\.toml|compose\.yaml|pgqueue(?:-macros)?/)'
+# Dashboard assets cannot change a query.
+exclude = '^pgqueue/assets/'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "cargo-test"
+name = "cargo test"
+entry = '''
+set -euo pipefail
+docker compose up -d --wait postgres
+(
+    cd pgqueue
+    DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+        cargo sqlx migrate run
+)
+# llvm-cov cannot instrument doctests on stable, so they run as their own pass.
+DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+    cargo test --locked --quiet --workspace --all-features --doc
+DATABASE_URL="${DATABASE_URL:-postgres://pgqueue:pgqueue@localhost:5439/pgqueue}" \
+    cargo llvm-cov --locked --quiet --workspace --all-features --fail-under-lines 90
+'''
+language = "system"
+shell = "bash"
+files = '^(Cargo\.(toml|lock)|prek\.toml|compose\.yaml|pgqueue(?:-macros)?/)'
+pass_filenames = false
