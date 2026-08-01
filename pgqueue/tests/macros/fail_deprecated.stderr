@@ -1,0 +1,23 @@
+error: use of deprecated function `old_helper`: do not call
+  --> tests/macros/fail_deprecated.rs:13:8
+   |
+13 |     Ok(old_helper())
+   |        ^^^^^^^^^^
+   |
+note: the lint level is defined here
+  --> tests/macros/fail_deprecated.rs:4:9
+   |
+ 4 | #![deny(deprecated)]
+   |         ^^^^^^^^^^
+
+error: use of deprecated function `old_helper`: do not call
+  --> tests/macros/fail_deprecated.rs:18:8
+   |
+18 |     Ok(old_helper())
+   |        ^^^^^^^^^^
+
+error: use of deprecated function `old_helper`: do not call
+  --> tests/macros/fail_deprecated.rs:22:5
+   |
+22 |     old_helper()
+   |     ^^^^^^^^^^

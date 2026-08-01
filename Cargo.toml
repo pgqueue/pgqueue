@@ -33,7 +33,9 @@ repository = "https://github.com/pgqueue/pgqueue"
 authors = ["Joohwan Oh <joohwan@hounddog.ai>"]
 
 [workspace.dependencies]
-pgqueue-macros = { path = "pgqueue-macros", version = "0.2.0" }
+# Exact pin: macro expansions call into `pgqueue::__private`, which is not
+# semver-stable, so the two crates must never resolve to different versions.
+pgqueue-macros = { path = "pgqueue-macros", version = "=0.2.0" }
 
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "serde"] }
 cron_schedule = { package = "croner", version = "3.0" }
