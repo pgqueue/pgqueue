@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+if ! command -v cargo-watch >/dev/null 2>&1; then
+    cargo install cargo-watch --locked
+fi
+
+exec cargo watch \
+    --watch pgqueue/src \
+    --watch pgqueue/assets \
+    --watch pgqueue/examples \
+    --watch pgqueue-macros/src \
+    --watch pgqueue/migrations \
+    --watch Cargo.toml \
+    --watch Cargo.lock \
+    --watch pgqueue/Cargo.toml \
+    --watch pgqueue-macros/Cargo.toml \
+    --exec "run -p pgqueue --example dashboard"

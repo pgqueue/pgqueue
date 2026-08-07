@@ -1,7 +1,7 @@
 interface:
   display_name: "Loop Review"
-  short_description: "Review and fix changes in isolated environments"
-  default_prompt: "Use $loop-review to review and fix uncommitted changes."
+  short_description: "Iteratively review and fix uncommitted changes"
+  default_prompt: "Use $loop-review to review and fix my uncommitted changes with fresh subagents until they meet the quality threshold."
 
 policy:
   allow_implicit_invocation: false
